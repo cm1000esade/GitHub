@@ -1,10 +1,20 @@
+
+# coding: utf-8
+
+# The first one will be a scatterplot with two DropDown boxes for the different indicators. It will have also a slide for the different years in the data.
+
+# In[4]:
+
+
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import pandas as pd
 import plotly.graph_objs as go
 
-app = dash.Dash()
+app = dash.Dash(__name__)
+server = app.server
+app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
 
 df = pd.read_csv("nama_10_gdp_1_Data.csv")
 
@@ -103,16 +113,22 @@ def update_graph(xaxis_column_name, yaxis_column_name,
 
 if __name__ == '__main__':
     app.run_server()
-    
-    
-    
+
+
+# The other graph will be a line chart with two DropDown boxes, one for the country and the other for selecting one of the indicators. (hint use Scatter object using mode = 'lines' (more here)
+
+# In[2]:
+
+
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import pandas as pd
 import plotly.graph_objs as go
 
-app = dash.Dash()
+app = dash.Dash(__name__)
+server = app.server
+app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
 
 df = pd.read_csv("nama_10_gdp_1_Data.csv")
 
@@ -198,3 +214,4 @@ def update_graph(xaxis_column_name,
 
 if __name__ == '__main__':
     app.run_server()
+
