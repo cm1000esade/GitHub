@@ -1,10 +1,5 @@
-
+#!/usr/bin/env python
 # coding: utf-8
-
-# The first one will be a scatterplot with two DropDown boxes for the different indicators. It will have also a slide for the different years in the data.
-
-# In[4]:
-
 
 import dash
 import dash_core_components as dcc
@@ -17,12 +12,20 @@ server = app.server
 app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
 
 df = pd.read_csv("nama_10_gdp_1_Data.csv")
+# drop GEO categories which contain "Euro" because they are not single country
+df = df[df.GEO.str.contains("Euro") == False]
 
 available_indicators = df['NA_ITEM'].unique()
+available_countries = df['GEO'].unique()
 
+# make drop-down boxes for the first graph (indicator-indicator)
 app.layout = html.Div([
     html.Div([
 
+        # insert the graph title
+        html.Div(children="The graph with two indicator drop-down boxes and year-slider"),
+
+        # set the first indicator drop-down box
         html.Div([
             dcc.Dropdown(
                 id='xaxis-column',
@@ -39,8 +42,9 @@ app.layout = html.Div([
                 labelStyle={'display': 'inline-block'}
             )
         ],
-        style={'width': '48%', 'display': 'inline-block'}),
+            style={'width': '48%', 'display': 'inline-block'}),
 
+        # set the second indicator drop-down box
         html.Div([
             dcc.Dropdown(
                 id='yaxis-column',
@@ -54,12 +58,15 @@ app.layout = html.Div([
                 # initial number
                 value='Linear',
                 labelStyle={'display': 'inline-block'}
-            )
-        ],style={'width': '48%', 'float': 'right', 'display': 'inline-block'})
+            )],
+            # set the style
+            style={'width': '48%', 'float': 'right', 'display': 'inline-block'})
     ]),
 
+    # insert the graph
     dcc.Graph(id='GDP and main components'),
-    
+
+    # set the year-slider
     dcc.Slider(
         id='year--slider',
         min=df['TIME'].min(),
@@ -67,9 +74,43 @@ app.layout = html.Div([
         # initial number
         value=df['TIME'].max(),
         step=None,
-        marks={str(year): str(year) for year in df['TIME'].unique()}
-    )
+        marks={str(year): str(year) for year in df['TIME'].unique()}),
+
+    html.H1(children="""   """),
+
+    # insert the graph title
+    html.Div(children="The graph with indicator and country drop-down boxes"),
+
+   # set the indicator drop-down box
+    html.Div([
+        html.Div([
+            dcc.Dropdown(
+                id='indicator',
+                # set the indicator
+                options=[{'label': i, 'value': i} for i in available_indicators],
+                # initial number
+                value='Gross domestic product at market prices'
+            ),
+        ],
+            # set the style
+            style={'width': '48%', 'display': 'inline-block'}),
+
+        # set the country drop-down box
+        html.Div([
+            dcc.Dropdown(
+                id='country',
+                options=[{'label': i, 'value': i} for i in available_countries],
+                # initial number
+                value='Belgium'
+            )],
+            # set the style
+            style={'width': '48%', 'float': 'right', 'display': 'inline-block'})
+    ]),
+
+    # insert the graph
+    dcc.Graph(id='GDP and main components-2')
 ])
+
 
 @app.callback(
     dash.dependencies.Output('GDP and main components', 'figure'),
@@ -80,7 +121,7 @@ app.layout = html.Div([
      dash.dependencies.Input('year--slider', 'value')])
 
 def update_graph(xaxis_column_name, yaxis_column_name,
-                xaxis_type, yaxis_type,
+                 xaxis_type, yaxis_type,
                  year_value):
     dff = df[df['TIME'] == year_value]
 
@@ -99,11 +140,13 @@ def update_graph(xaxis_column_name, yaxis_column_name,
         'layout': go.Layout(
             xaxis={
                 'title': xaxis_column_name,
-                'type': 'linear' if xaxis_type == 'Linear' else 'log'
+                'type': 'linear' if xaxis_type == 'Linear' else 'log',
+                'rangemode': 'tozero'
             },
             yaxis={
                 'title': yaxis_column_name,
-                'type': 'linear' if yaxis_type == 'Linear' else 'log'
+                'type': 'linear' if yaxis_type == 'Linear' else 'log',
+                'rangemode': 'nonnegative'
             },
             margin={'l': 40, 'b': 40, 't': 10, 'r': 0},
             hovermode='closest'
@@ -111,86 +154,22 @@ def update_graph(xaxis_column_name, yaxis_column_name,
     }
 
 
-if __name__ == '__main__':
-    app.run_server()
-
-
-# The other graph will be a line chart with two DropDown boxes, one for the country and the other for selecting one of the indicators. (hint use Scatter object using mode = 'lines' (more here)
-
-# In[2]:
-
-
-import dash
-import dash_core_components as dcc
-import dash_html_components as html
-import pandas as pd
-import plotly.graph_objs as go
-
-app = dash.Dash(__name__)
-server = app.server
-app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
-
-df = pd.read_csv("nama_10_gdp_1_Data.csv")
-
-available_indicators = df['NA_ITEM'].unique()
-available_countries = df["GEO"].unique()
-
-app.layout = html.Div([
-    html.Div([
-
-        html.Div([
-            dcc.Dropdown(
-                id='indicator',
-                # set the indicator
-                options=[{'label': i, 'value': i} for i in available_indicators],
-                # 初期値
-                value='Gross domestic product at market prices'
-            ),
-
-        ],
-        # 上の2つの要素をひとまとめにstyleを設定する
-        style={'width': '48%', 'display': 'inline-block'}),
-
-        html.Div([
-            dcc.Dropdown(
-                id='country',
-                options=[{'label': i, 'value': i} for i in available_countries],
-                # 初期値
-                value='European Union (current composition)'
-            ),
-
-        # 上の2つの要素をひとまとめにstyleを設定する
-        ],style={'width': '48%', 'float': 'right', 'display': 'inline-block'})
-    ]),
-
-    # ここに出力する図を挿入する
-    dcc.Graph(id='GDP and main components-2'),
-    
-])
-
 @app.callback(
     dash.dependencies.Output('GDP and main components-2', 'figure'),
-    [dash.dependencies.Input('country', 'value'),
-     dash.dependencies.Input('indicator', 'value')
-     #dash.dependencies.Input('year--slider', 'value')
-    ])
+    [dash.dependencies.Input('indicator', 'value'),
+     dash.dependencies.Input('country', 'value')])
 
+def update_graph(indicator,
+                 country
+                 ):
+    dff = df[df['GEO'] == country]
 
-def update_graph(xaxis_column_name, 
-                yaxis_column_name,
-                 #country,indicator
-                ):
-    #df1 = df[df['GEO'] == country]
-    #df1 = df[(df["NA_ITEM"] == indicator) & (df["GEO"] == country)]
-    #df2 = df[df["NA_ITEM"] == indicator]
-    
     return {
         'data': [go.Scatter(
-            x = df["TIME"].unique(),
-            #x=df1[df1['NA_ITEM'] == xaxis_column_name]['TIME'],
-            y=df[(df["NA_ITEM"] == xaxis_column_name) & (df["GEO"] == yaxis_column_name)]['Value'],
-            text=df[df['NA_ITEM'] == yaxis_column_name]['Value'],
-            mode='lines',
+            x=dff[dff['NA_ITEM'] == indicator]['TIME'],
+            y=dff[dff['NA_ITEM'] == indicator]['Value'],
+            text=dff[dff['NA_ITEM'] == indicator]['Value'],
+            mode='lines+markers',
             marker={
                 'size': 15,
                 'opacity': 0.5,
@@ -199,12 +178,14 @@ def update_graph(xaxis_column_name,
         )],
         'layout': go.Layout(
             xaxis={
-                'title': xaxis_column_name,
-                'type': 'linear'
+                'title': 'year',
+                'type': 'linear',
+                'range': [2008, 2017]
             },
             yaxis={
-                'title': yaxis_column_name,
-                'type': 'linear'
+                'title': indicator + " in " + country,
+                'type': 'linear',
+                'rangemode': 'nonnegative'
             },
             margin={'l': 40, 'b': 40, 't': 10, 'r': 0},
             hovermode='closest'
@@ -214,4 +195,3 @@ def update_graph(xaxis_column_name,
 
 if __name__ == '__main__':
     app.run_server()
-
