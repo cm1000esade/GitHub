@@ -180,14 +180,14 @@ def update_graph(indicator,
             xaxis={
                 'title': 'year',
                 'type': 'linear',
-                'range': [2008, 2018]
+                'range': [2008, 2017]
             },
             yaxis={
                 'title': indicator + " in " + country,
                 'type': 'linear',
                 'rangemode': 'nonnegative'
             },
-            margin={'l': 40, 'b': 40, 't': 10, 'r': 0},
+            margin={'l': 50, 'b': 40, 't': 10, 'r': 0},
             hovermode='closest'
         )
     }
