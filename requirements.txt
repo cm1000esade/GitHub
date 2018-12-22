@@ -1,7 +1,7 @@
 plotly==3.4.2
 dash==0.35.0
 dash-core-components==0.41.0
-dash-html-components==0.13.0
+dash-html-components==0.13.4
 dash-renderer==0.16.1
 dash.ly==0.17.3
 pandas==0.23.4
