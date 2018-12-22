@@ -180,7 +180,7 @@ def update_graph(indicator,
             xaxis={
                 'title': 'year',
                 'type': 'linear',
-                'range': [2008, 2017]
+                'range': [2008, 2018]
             },
             yaxis={
                 'title': indicator + " in " + country,
