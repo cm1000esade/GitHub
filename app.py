@@ -184,10 +184,10 @@ def update_graph(indicator,
             },
             yaxis={
                 'title': indicator + " in " + country,
-                'type': 'linear',
-                'rangemode': 'nonnegative'
+                'type': 'linear'
+                #'rangemode': 'nonnegative'
             },
-            margin={'l': 50, 'b': 50, 't': 10, 'r': 10},
+            margin={'l': 40, 'b': 40, 't': 10, 'r': 0},
             hovermode='closest'
         )
     }
